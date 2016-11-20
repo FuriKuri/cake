@@ -1,0 +1,9 @@
+FROM alpine:3.4
+
+WORKDIR /app
+COPY cake.sh /app
+
+RUN apk add --update curl && \
+    rm -rf /var/cache/apk/*
+
+ENTRYPOINT ["./cake.sh"]
