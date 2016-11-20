@@ -1,0 +1,94 @@
+#cloud-config
+
+coreos:
+  update:
+    reboot-strategy: off
+  units:
+    - name: "nginx-proxy.pre.service"
+      command: "start"
+      content: |
+        [Unit]
+        Description=Prepare dir
+        After=docker.service
+
+        [Service]
+        Type=oneshot
+        ExecStart=/bin/mkdir -p /etc/letsencrypt
+    - name: "nginx-proxy.service"
+      command: "start"
+      content: |
+        [Unit]
+        Description=nginx-proxy
+        After=docker.service
+        Requires=docker.service
+        After=nginx-proxy.pre.service
+        Requires=nginx-proxy.pre.service
+
+        [Service]
+        Restart=always
+        ExecStartPre=-/usr/bin/docker kill nginx-proxy
+        ExecStartPre=-/usr/bin/docker rm nginx-proxy
+        ExecStartPre=-/usr/bin/docker pull jwilder/nginx-proxy
+        ExecStop=/usr/bin/docker stop -t 2 nginx-proxy
+        ExecStart=/usr/bin/docker run -p 80:80 -p 443:443 \
+                  --name nginx-proxy \
+                  -v /etc/letsencrypt:/etc/nginx/certs:ro \
+                  -v /etc/nginx/vhost.d \
+                  -v /usr/share/nginx/html \
+                  -v /var/run/docker.sock:/tmp/docker.sock:ro \
+                  jwilder/nginx-proxy
+    - name: "letsencrypt-companion.service"
+      command: "start"
+      content: |
+        [Unit]
+        Description=letsencrypt-companion
+        After=docker.service
+        Requires=docker.service
+        After=nginx-proxy.service
+        Requires=nginx-proxy.service
+
+        [Service]
+        Restart=always
+        ExecStartPre=-/usr/bin/docker kill letsencrypt-companion
+        ExecStartPre=-/usr/bin/docker rm letsencrypt-companion
+        ExecStartPre=-/usr/bin/docker pull jrcs/letsencrypt-nginx-proxy-companion
+        ExecStop=/usr/bin/docker stop -t 2 jrcs/letsencrypt-nginx-proxy-companion
+        ExecStart=/usr/bin/docker run -v /etc/letsencrypt:/etc/nginx/certs:rw \
+                  --volumes-from nginx-proxy \
+                  -v /var/run/docker.sock:/var/run/docker.sock:ro \
+                  jrcs/letsencrypt-nginx-proxy-companion
+    - name: "cake-server.pre.service"
+      command: "start"
+      content: |
+        [Unit]
+        Description=Prepare dir for cake server
+        After=docker.service
+        After=letsencrypt-companion.service
+        Requires=letsencrypt-companion.service
+        
+        [Service]
+        Type=oneshot
+        ExecStart=/bin/mkdir -p /opt/cake/data
+    - name: "cake-server.service"
+      command: "start"
+      content: |
+        [Unit]
+        Description=cake-server
+        After=docker.service
+        Requires=docker.service
+        After=cake-server.pre.service
+        Requires=cake-server.pre.service
+
+        [Service]
+        Restart=always
+        ExecStartPre=-/usr/bin/docker kill cake-server
+        ExecStartPre=-/usr/bin/docker rm cake-server
+        ExecStartPre=-/usr/bin/docker pull furikuri/cake-server
+        ExecStop=/usr/bin/docker stop -t 2 furikuri/cake-server
+        ExecStart=/usr/bin/docker run --name cake-server \
+                  -p 3000:3000 \
+                  -v /opt/cake/data:/data \
+                  -e "VIRTUAL_HOST=cake.furikuri.net" \
+                  -e "LETSENCRYPT_HOST=cake.furikuri.net" \
+                  -e "LETSENCRYPT_EMAIL=tf.pack@gmail.com" \
+                  furikuri/cake-server
