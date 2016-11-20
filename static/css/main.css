@@ -1,0 +1,66 @@
+.guest {
+  font-size: 1.3em;
+  padding: 5px;
+  margin: 2px;
+}
+
+.wrapper {
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
+  max-width: 1000px;
+  padding: 0 20px;
+}
+
+.instructions h5 {
+  text-align: center;
+}
+
+#title-row h1 {
+  text-align: center;
+}
+
+#avatar-row {
+  text-align: center;
+}
+
+#cake-row {
+  text-align: center;
+}
+
+#greetings-row {
+  text-align: center;
+}
+
+#guest-list {
+  text-align: left;
+}
+
+.cake {
+  font-size: 38px;
+  width: 250px;
+  margin: auto;
+}
+
+#guide-row {
+  text-align: center;
+}
+
+#state-row {
+  text-align: center;
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 150px;
+  -webkit-border-radius: 150px;
+  -moz-border-radius: 150px;
+}
+
+code {
+  display: block;
+  overflow-x: auto;
+  padding: 1rem;
+  background: #f9f9f9;
+}

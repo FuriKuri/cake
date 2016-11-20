@@ -1,0 +1,68 @@
+<div id="state-row">
+  <h3>{{{guests.length}}} pieces of cake have already been taken</h3>
+</div>
+<hr />
+<div id="cake-row">
+  <h4>{{{cakes.length}}} pieces of cakes are left</h4>
+  <i>I will bake more, if there are only 2 left.</i>
+  <div class="cake">
+    {{#each cakes}}
+      {{this}}
+    {{/each}}
+  </div>
+</div>
+<hr />
+<div id="guide-row">
+  <h4>How do you get your piece of the cake ...</h4>
+</div>
+<div class="row">
+  <div class="instructions">
+    <h5>... with Docker</h5>
+  </div>
+</div>
+<div class="row">
+  <div class="large-12 columns instructions">
+    <pre>
+      <code>$ docker run furikuri/cake --twitter &#x3C;twitter_name&#x3E;
+$ docker run furikuri/cake --github &#x3C;github_name&#x3E;
+$ docker run furikuri/cake --name &#x3C;just_your_name&#x3E;</code>
+    </pre>
+  </div>
+</div>
+<div class="row">
+  <div class="instructions">
+    <h5>... with cURL</h5>
+  </div>
+</div>
+<div class="row">
+  <div class="large-12 columns instructions">
+    <pre>
+      <code>$ curl -X "POST" "https://cake.furikuri.net/" \
+     -H "Content-Type: application/json" \
+     -d '{"twitter": "&#x3C;twitter_name&#x3E;"}'
+$ curl -X "POST" "https://cake.furikuri.net/" \
+     -H "Content-Type: application/json" \
+     -d '{"github": "&#x3C;github_name&#x3E;"}'
+$ curl -X "POST" "https://cake.furikuri.net/" \
+     -H "Content-Type: application/json" \
+     -d '{"name": "&#x3C;just_your_name&#x3E;"}'</code>
+    </pre>
+  </div>
+</div>
+<hr />
+<div id="greetings-row">
+  <h4>These guests have already taken their piece of cake</h4>
+</div>
+<div class="row">
+  <div class="large-12 columns">
+    {{#each guests}}
+      {{#if this.twitter}}
+        <a class="label guest" href="https://twitter.com/{{this.twitter}}"><i class="fi-social-twitter"></i> {{this.twitter}}</a>
+      {{else if this.github}}
+        <a class="label guest" href="https://github.com/{{this.github}}"><i class="fi-social-github"></i> {{this.github}}</a>
+      {{else}}
+        <span class="label guest"><i class="fi-heart"></i> {{this.name}}</span>
+      {{/if}}
+    {{/each}}
+  </div>
+</div>
