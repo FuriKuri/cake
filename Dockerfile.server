@@ -1,0 +1,17 @@
+FROM node:7-slim
+
+WORKDIR /app
+
+COPY server.js /app
+COPY package.json /app
+COPY static /app/static
+COPY views /app/views
+
+RUN npm install
+
+RUN mkdir /data
+ENV BACKUP_FILE_PATH /data/guests.json
+
+EXPOSE 3000
+
+ENTRYPOINT ["node", "server.js"]
