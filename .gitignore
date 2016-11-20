@@ -1,3 +1,4 @@
-node_modues
+node_modules
 data
 *.tfstate*
+.DS_Store
