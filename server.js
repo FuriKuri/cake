@@ -29,9 +29,9 @@ function backupGuests() {
   if (!runningBackup) {
     runningBackup = true;
     fs.writeFile(filePath, JSON.stringify(guests), function (err) {
+      runningBackup = false;
       if (err) return console.log(err);
       console.log('Successful backup ^_^');
-      runningBackup = false;
     });
   }
 }
